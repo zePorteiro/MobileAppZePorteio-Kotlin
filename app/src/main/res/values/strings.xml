@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ZePorteiroApp</string>
+    <string name="title_activity_registration_page1">RegistrationPage1</string>
+    <string name="title_activity_welcome_page">WelcomePage</string>
+    <string name="title_activity_home_page">HomePage</string>
+    <string name="title_activity_confirm_delivery_page">ConfirmDeliveryPage</string>
+</resources>
