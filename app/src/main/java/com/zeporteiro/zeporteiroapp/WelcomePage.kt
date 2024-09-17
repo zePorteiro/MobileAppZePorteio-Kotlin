@@ -91,7 +91,7 @@ fun WelcomeScreen(modifier: Modifier = Modifier) {
         modifier = Modifier
             .background(Color.White)
             .fillMaxSize()
-            .padding(bottom = 48.dp)
+            .padding(bottom = 30.dp)
     ) {
         Image(
             painter = painterResource(id = R.mipmap.welcome_image),
@@ -105,7 +105,7 @@ fun WelcomeScreen(modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp)
+                .padding(15.dp)
                 .padding(bottom = 50.dp)
         ) {
             Row(
@@ -151,7 +151,6 @@ fun WelcomeScreen(modifier: Modifier = Modifier) {
                 lineHeight = 18.sp,
                 letterSpacing = 0.11.sp,
                 modifier = Modifier.padding(top = 16.dp)
-                    .padding(bottom = 35.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))

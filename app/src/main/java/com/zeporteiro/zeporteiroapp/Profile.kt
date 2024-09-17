@@ -51,6 +51,7 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
         Header5()
         Spacer(modifier = Modifier)
         ProfileField()
+        Spacer(modifier = Modifier.weight(1f))
         BottomNavigationBar3()
     }
 }
@@ -79,7 +80,7 @@ fun ProfileField() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 30.dp,start = 13.dp,end = 13.dp,)
+            .padding(top = 30.dp, start = 13.dp, end = 13.dp,)
     ){
         Text("Nome Completo",
             color = Color.Black,
@@ -97,7 +98,7 @@ fun ProfileField() {
                     color = Color(0xFFEFEFEF),
                     shape = RoundedCornerShape(9.dp)
                 )
-                .padding(vertical = 19.dp,horizontal = 25.dp,)
+                .padding(vertical = 19.dp, horizontal = 25.dp,)
         ){
             Text("Nome do morador",
                 color = Color(0xFF000000),
@@ -120,7 +121,7 @@ fun ProfileField() {
                     color = Color(0xFFEFEFEF),
                     shape = RoundedCornerShape(9.dp)
                 )
-                .padding(vertical = 18.dp,horizontal = 24.dp,)
+                .padding(vertical = 18.dp, horizontal = 24.dp,)
         ){
             Text("exemplo@email.com",
                 color = Color(0xFF000000),
@@ -143,7 +144,7 @@ fun ProfileField() {
                     color = Color(0xFFEFEFEF),
                     shape = RoundedCornerShape(9.dp)
                 )
-                .padding(vertical = 16.dp,horizontal = 24.dp,)
+                .padding(vertical = 16.dp, horizontal = 24.dp,)
         ){
             Text("(11) 98746-1847",
                 color = Color(0xFF000000),
@@ -166,7 +167,7 @@ fun ProfileField() {
                     color = Color(0xFFEFEFEF),
                     shape = RoundedCornerShape(9.dp)
                 )
-                .padding(top = 23.dp,bottom = 13.dp,start = 23.dp,end = 23.dp,)
+                .padding(top = 23.dp, bottom = 13.dp, start = 23.dp, end = 23.dp,)
         ){
             Text("-",
                 color = Color(0xFF000000),
@@ -188,7 +189,7 @@ fun ProfileField() {
                     color = Color(0xFFEFEFEF),
                     shape = RoundedCornerShape(9.dp)
                 )
-                .padding(vertical = 19.dp,horizontal = 23.dp,)
+                .padding(vertical = 19.dp, horizontal = 23.dp,)
         ){
             Text("101",
                 color = Color(0xFF000000),

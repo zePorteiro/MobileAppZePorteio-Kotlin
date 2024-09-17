@@ -106,7 +106,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(457.dp)
+                .height(400.dp)
                 .background(Color(0xFFEAF2FF))
         ) {
             Image(

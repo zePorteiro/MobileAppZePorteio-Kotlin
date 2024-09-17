@@ -4,4 +4,6 @@
     <string name="title_activity_welcome_page">WelcomePage</string>
     <string name="title_activity_home_page">HomePage</string>
     <string name="title_activity_confirm_delivery_page">ConfirmDeliveryPage</string>
+    <string name="title_activity_sign_up_page">SignUpPage</string>
+    <string name="title_activity_sign_up2_page">SignUp2Page</string>
 </resources>

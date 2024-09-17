@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -102,72 +104,59 @@ fun Header2() {
 
 @Composable
 fun CardEncomenda() {
-    Card(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(
-                elevation = 20.dp,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .background(Color.White),
-        shape = RoundedCornerShape(12.dp)
+            .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+            .background(Color.White, shape = RoundedCornerShape(12.dp))
+            .padding(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
-        ) {
+        Column {
+            Text(
+                text = "Encomenda #221",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF0D1B34),
+                modifier = Modifier.padding(bottom = 5.dp)
+            )
+            Text(
+                text = "Porteiro Leandro",
+                fontSize = 14.sp,
+                color = Color(0xFF8696BB),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
             Row(
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = "Encomenda #221",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Porteiro Leandro",
-                        fontSize = 14.sp,
-                        color = Color(134, 150, 187, 255)
-                    )
-                }
+                Image(
+                    painter = painterResource(id = R.mipmap.icon_calendar),
+                    contentDescription = "Calendário",
+                    modifier = Modifier
+                        .padding(end = 9.dp,)
+                        .width(16.dp)
+                        .height(16.dp)
+                )
+                Text(
+                    text = "06/08/2024",
+                    fontSize = 12.sp,
+                    color = Color(0xFF6B6E82),
+                    modifier = Modifier.padding(end = 16.dp)
+                )
+                Image(
+                    painter = painterResource(id = R.mipmap.icon_clock),
+                    contentDescription = "Horário",
+                    modifier = Modifier
+                        .padding(end = 9.dp,)
+                        .width(16.dp)
+                        .height(16.dp)
+                )
+                Text(
+                    text = "14:42:08",
+                    fontSize = 12.sp,
+                    color = Color(0xFF6B6E82)
+                )
             }
         }
-
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(15.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            EncomendaInfo(
-                icon = R.mipmap.icon_calendar,
-                text = "06/08/2024"
-            )
-            EncomendaInfo(
-                icon = R.mipmap.icon_clock,
-                text = "14:42:08"
-            )
-        }
-    }
-}
-
-@Composable
-fun EncomendaInfo(icon: Int, text: String) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Image(
-            painter = painterResource(id = icon),
-            contentDescription = null,
-            modifier = Modifier.size(16.dp)
-        )
-        Text(
-            text = text,
-            fontSize = 12.sp,
-            color = Color(0xFF6B6E82)
-        )
     }
 }
 
@@ -233,6 +222,12 @@ fun NavegacaoItem2(icon: Int, label: String) {
     }
 }
 
-
+@Preview(showBackground = true)
+@Composable
+fun ConfirmDeliveryPagePreview() {
+    ZePorteiroAppTheme {
+        ConfirmDeliveryScreen()
+    }
+}
 
 

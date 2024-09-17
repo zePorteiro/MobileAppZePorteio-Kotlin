@@ -13,6 +13,16 @@
         android:theme="@style/Theme.ZePorteiroApp"
         tools:targetApi="31">
         <activity
+            android:name=".SignUp2Page"
+            android:exported="false"
+            android:label="@string/title_activity_sign_up2_page"
+            android:theme="@style/Theme.ZePorteiroApp" />
+        <activity
+            android:name=".SignUpPage"
+            android:exported="true"
+            android:label="@string/title_activity_sign_up_page"
+            android:theme="@style/Theme.ZePorteiroApp" />
+        <activity
             android:name=".ConfirmDeliveryPage"
             android:exported="true"
             android:label="@string/title_activity_confirm_delivery_page"
@@ -26,6 +36,21 @@
             android:name=".WelcomePage"
             android:exported="true"
             android:label="@string/title_activity_welcome_page"
+            android:theme="@style/Theme.ZePorteiroApp" />
+        <activity
+            android:name=".ConfirmarEntrega"
+            android:exported="true"
+            android:label="@string/title_activity_home_page"
+            android:theme="@style/Theme.ZePorteiroApp" />
+        <activity
+            android:name=".ListaEncomenda"
+            android:exported="true"
+            android:label="@string/title_activity_home_page"
+            android:theme="@style/Theme.ZePorteiroApp" />
+        <activity
+            android:name=".Profile"
+            android:exported="true"
+            android:label="@string/title_activity_home_page"
             android:theme="@style/Theme.ZePorteiroApp" />
         <activity
             android:name=".LoginPage"

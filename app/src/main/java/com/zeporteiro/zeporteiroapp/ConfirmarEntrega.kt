@@ -63,6 +63,7 @@ fun ConfirmarEntregaScreen(modifier: Modifier = Modifier) {
         Encomenda()
         ConfirmarEntregaView()
         ConfirmarRetiradaButton()
+        Spacer(modifier = Modifier.height(95.dp))
         BottomNavigationBar2()
     }
 }
@@ -203,7 +204,7 @@ fun ConfirmarEntregaView() {
                 painter = painterResource(id = R.mipmap.icon_calender_black),
                 contentDescription = "Calendário",
                 modifier = Modifier
-                    .padding(end = 9.dp,start = 17.dp)
+                    .padding(end = 9.dp, start = 17.dp)
                     .width(16.dp)
                     .height(16.dp)
             )
