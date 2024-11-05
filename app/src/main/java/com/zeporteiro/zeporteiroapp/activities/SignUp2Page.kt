@@ -1,4 +1,4 @@
-package com.zeporteiro.zeporteiroapp
+package com.zeporteiro.zeporteiroapp.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zeporteiro.zeporteiroapp.R
 
 class SignUp2Page : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

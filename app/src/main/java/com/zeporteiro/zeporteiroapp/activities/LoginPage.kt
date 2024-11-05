@@ -1,4 +1,4 @@
-package com.zeporteiro.zeporteiroapp
+package com.zeporteiro.zeporteiroapp.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,31 +25,35 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zeporteiro.zeporteiroapp.R
+import androidx.lifecycle.ViewModel
 import com.zeporteiro.zeporteiroapp.ui.theme.ZePorteiroAppTheme
+import com.zeporteiro.zeporteiroapp.viewModel.LoginPageViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.zeporteiro.zeporteiroapp.R
+import org.koin.androidx.compose.koinViewModel
+import kotlinx.coroutines.flow.collectAsState
 
 class LoginPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,6 +74,8 @@ class LoginPage : ComponentActivity() {
 
 @Composable
 fun LoginScreen(modifier: Modifier = Modifier) {
+    val viewModel: LoginPageViewModel = koinViewModel()
+
     val fontProvider = GoogleFont.Provider(
         providerAuthority = "com.google.android.gms.fonts",
         providerPackage = "com.google.android.gms",
@@ -132,7 +137,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            LoginForm()
+            LoginForm(loginViewModel = viewModel)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -141,7 +146,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     text = "Não possui conta?",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal
-                    )
+                )
                 Text(text = " Cadastre-se",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -153,16 +158,27 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LoginForm() {
+fun LoginForm(loginViewModel: LoginPageViewModel) {
     var email by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
+    val isLoggedIn by loginViewModel.isLoggedIn.collectAsState()
+    val loginError by loginViewModel.loginError.collectAsState()
+
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn) {
+            // Navegue para a próxima tela
+        }
+    }
     Column {
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
-            label = { Text("Digite o seu email") },
+            onValueChange = {
+                email = it
+                loginViewModel.onEmailChange(it)
+            },
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp)
         )
@@ -170,22 +186,35 @@ fun LoginForm() {
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = senha,
-            onValueChange = { senha = it },
-            label = { Text("Digite a sua senha") },
+            value = password,
+            onValueChange = {
+                password = it
+                loginViewModel.onPasswordChange(it)
+            },
+            label = { Text("Senha") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                     Icon(
-                        painter = painterResource(id = if (isPasswordVisible) R.mipmap.hide_password_icon else R.mipmap.show_password_icon),
-                        contentDescription = if (isPasswordVisible) "Esconder senha" else "Mostrar senha",
-                        modifier = Modifier.size(24.dp)
+                        painter = painterResource(
+                            id = if (isPasswordVisible) R.mipmap.hide_password_icon
+                            else R.mipmap.show_password_icon
+                        ),
+                        contentDescription = if (isPasswordVisible) "Esconder senha" else "Mostrar senha"
                     )
                 }
             }
         )
+
+        loginError?.let {
+            Text(
+                text = it,
+                color = Color.Red,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -199,7 +228,7 @@ fun LoginForm() {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = {  },
+            onClick = { loginViewModel.login() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),

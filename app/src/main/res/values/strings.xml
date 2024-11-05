@@ -6,4 +6,84 @@
     <string name="title_activity_confirm_delivery_page">ConfirmDeliveryPage</string>
     <string name="title_activity_sign_up_page">SignUpPage</string>
     <string name="title_activity_sign_up2_page">SignUp2Page</string>
+
+    <!-- Welcome Page -->
+    <!-- Títulos e descrições -->
+    <string name="welcome_title">Simplificando a gestão de\nentregas em condomínios</string>
+    <string name="welcome_description">
+        O Zé Porteiro visa otimizar a gestão de entregas em condomínios, proporcionando um sistema simples que reduz o tempo e erros, aumentando a satisfação dos moradores e a eficiência da portaria.
+    </string>
+
+    <!-- Sign Up Page -->
+    <!-- Títulos e descrições -->
+    <string name="sign_up_title">Faça o seu cadastro</string>
+    <string name="sign_up_description">Crie uma conta para começar a controlar suas encomendas</string>
+
+    <!-- Campos de entrada -->
+    <string name="full_name_label">Nome completo</string>
+    <string name="full_name_placeholder">Digite o seu nome</string>
+    <string name="email_label">E-mail</string>
+    <string name="email_placeholder">Digite o seu e-mail</string>
+    <string name="phone_label">Telefone Celular</string>
+    <string name="phone_placeholder">DDD + Telefone celular</string>
+    <string name="password_label">Senha</string>
+    <string name="password_placeholder">Digite a sua senha</string>
+    <string name="confirm_password_label">Confirmar Senha</string>
+    <string name="confirm_password_placeholder">Digite a sua senha</string>
+
+    <!-- Requisitos da senha -->
+    <string name="password_requirements">A senha precisa de:\nMínimo 6 caracteres;\nNúmeros e caracteres especiais;</string>
+
+    <!-- Botões -->
+    <string name="advance_button">Avançar</string>
+
+    <!-- Texto para login -->
+    <string name="already_have_account">Já possui conta? </string>
+    <string name="login_now">Acesse agora</string>
+
+    <!-- SignUp2 Page -->
+    <!-- Títulos e descrições -->
+    <string name="sign_up2_title">Faça o seu cadastro</string>
+    <string name="sign_up2_description">Crie uma conta para começar a controlar suas encomendas</string>
+
+    <!-- Campos de entrada -->
+    <string name="cep_label">CEP*</string>
+    <string name="cep_placeholder">Digite o seu cep</string>
+    <string name="logradouro_label">Logradouro*</string>
+    <string name="logradouro_placeholder">Digite o logradouro</string>
+    <string name="numero_label">Número*</string>
+    <string name="numero_placeholder">Digite o número</string>
+    <string name="complemento_label">Complemento*</string>
+    <string name="complemento_placeholder">Digite o número do apartamento</string>
+    <string name="bloco_label">Bloco</string>
+    <string name="bloco_placeholder">Digite o bloco em que reside</string>
+    <string name="nome_condominio_label">Nome do Condomínio*</string>
+    <string name="nome_condominio_placeholder">Digite o nome do condomínio</string>
+
+    <!-- Botões -->
+    <string name="finalize_button">Finalizar Cadastro</string>
+
+    <!-- Texto de navegação -->
+    <string name="back_button">Voltar a página</string>
+
+    <!-- Profile -->
+    <!-- Títulos e Seções -->
+    <string name="profile_title">Meu Perfil</string>
+    <string name="profile_description">Visualize e edite suas informações pessoais</string>
+
+    <!-- Campos de Informações Pessoais -->
+    <string name="full_name2_placeholder">Nome do morador</string>
+    <string name="email2_label">E-mail cadastrado</string>
+    <string name="email2_placeholder">exemplo@email.com</string>
+    <string name="cell_phone_placeholder">(11) 98746-1847</string>
+    <string name="landline_label">Telefone fixo</string>
+    <string name="apartment_number_label">Número do apartamento</string>
+    <string name="apartment_number_placeholder">101</string>
+
+    <!-- Barra de Navegação Inferior -->
+    <string name="nav_home">Página Inicial</string>
+    <string name="nav_packages">Encomendas</string>
+    <string name="nav_profile">Perfil</string>
+
+
 </resources>

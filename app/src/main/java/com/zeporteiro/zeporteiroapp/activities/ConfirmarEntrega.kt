@@ -1,4 +1,4 @@
-package com.zeporteiro.zeporteiroapp
+package com.zeporteiro.zeporteiroapp.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zeporteiro.zeporteiroapp.R
 import com.zeporteiro.zeporteiroapp.ui.theme.ZePorteiroAppTheme
 
 class ConfirmarEntrega : ComponentActivity() {

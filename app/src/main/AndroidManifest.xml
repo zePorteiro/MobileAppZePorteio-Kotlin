@@ -2,7 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
+        android:usesCleartextTraffic="true"
+        android:name=".Aplicacao"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -12,57 +17,66 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZePorteiroApp"
         tools:targetApi="31">
+
         <activity
-            android:name=".SignUp2Page"
-            android:exported="false"
-            android:label="@string/title_activity_sign_up2_page"
-            android:theme="@style/Theme.ZePorteiroApp" />
-        <activity
-            android:name=".SignUpPage"
-            android:exported="true"
-            android:label="@string/title_activity_sign_up_page"
-            android:theme="@style/Theme.ZePorteiroApp" />
-        <activity
-            android:name=".ConfirmDeliveryPage"
-            android:exported="true"
-            android:label="@string/title_activity_confirm_delivery_page"
-            android:theme="@style/Theme.ZePorteiroApp" />
-        <activity
-            android:name=".HomePage"
-            android:exported="true"
-            android:label="@string/title_activity_home_page"
-            android:theme="@style/Theme.ZePorteiroApp" />
-        <activity
-            android:name=".WelcomePage"
+            android:name=".activities.WelcomePage"
             android:exported="true"
             android:label="@string/title_activity_welcome_page"
             android:theme="@style/Theme.ZePorteiroApp" />
+
         <activity
-            android:name=".ConfirmarEntrega"
+            android:name=".activities.SignUpPage"
+            android:exported="true"
+            android:label="@string/title_activity_sign_up_page"
+            android:theme="@style/Theme.ZePorteiroApp" />
+
+        <activity
+            android:name=".activities.SignUp2Page"
+            android:exported="true"
+            android:label="@string/title_activity_sign_up2_page"
+            android:theme="@style/Theme.ZePorteiroApp" />
+
+        <activity
+            android:name=".activities.ConfirmDeliveryPage"
+            android:exported="true"
+            android:label="@string/title_activity_confirm_delivery_page"
+            android:theme="@style/Theme.ZePorteiroApp" />
+
+        <activity
+            android:name=".activities.HomePage"
             android:exported="true"
             android:label="@string/title_activity_home_page"
             android:theme="@style/Theme.ZePorteiroApp" />
+
         <activity
-            android:name=".ListaEncomenda"
+            android:name=".activities.ConfirmarEntrega"
             android:exported="true"
             android:label="@string/title_activity_home_page"
             android:theme="@style/Theme.ZePorteiroApp" />
+
         <activity
-            android:name=".Profile"
+            android:name=".activities.ListaEncomenda"
             android:exported="true"
             android:label="@string/title_activity_home_page"
             android:theme="@style/Theme.ZePorteiroApp" />
+
         <activity
-            android:name=".LoginPage"
+            android:name=".activities.Profile"
+            android:exported="true"
+            android:label="@string/title_activity_home_page"
+            android:theme="@style/Theme.ZePorteiroApp" />
+
+        <activity
+            android:name=".activities.LoginPage"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.ZePorteiroApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

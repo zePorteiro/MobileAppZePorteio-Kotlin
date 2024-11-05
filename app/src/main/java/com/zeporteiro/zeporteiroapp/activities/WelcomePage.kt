@@ -1,4 +1,4 @@
-package com.zeporteiro.zeporteiroapp
+package com.zeporteiro.zeporteiroapp.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -37,6 +36,11 @@ import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.zeporteiro.zeporteiroapp.R
 import com.zeporteiro.zeporteiroapp.ui.theme.ZePorteiroAppTheme
 
 class WelcomePage : ComponentActivity() {
@@ -45,10 +49,22 @@ class WelcomePage : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ZePorteiroAppTheme {
+                val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    WelcomeScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    NavHost(
+                        navController = navController,
+                        startDestination = "welcome"
+                    ) {
+                        composable("welcome") {
+                            WelcomeScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                navController = navController
+                            )
+                        }
+                        composable("login") {
+                            LoginScreen()
+                        }
+                    }
                 }
             }
         }
@@ -56,7 +72,7 @@ class WelcomePage : ComponentActivity() {
 }
 
 @Composable
-fun WelcomeScreen(modifier: Modifier = Modifier) {
+fun WelcomeScreen(modifier: Modifier = Modifier, navController: NavController) {
 
     val fontProvider = GoogleFont.Provider(
         providerAuthority = "com.google.android.gms.fonts",
@@ -156,12 +172,12 @@ fun WelcomeScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { },
+                onClick = {  navController.navigate("login")},
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF294B29))
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF294B29))
             ) {
                 Text(
                     text = "Começar agora",
@@ -174,10 +190,10 @@ fun WelcomeScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun WelcomeScreenPreview() {
-    ZePorteiroAppTheme {
-        WelcomeScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun WelcomeScreenPreview() {
+//    ZePorteiroAppTheme {
+//        WelcomeScreen()
+//    }
+//}
