@@ -1,12 +1,10 @@
 package com.zeporteiro.zeporteiroapp.data
 
 data class Morador(
-    var id: Int? = null,
-    var nome: String? = null,
-    var email: String? = null,
-    var senha: String? = null,
-    var cpf: String? = null,
-    var cep : String? = null) {
+    val id: Int,
+    val nome: String,
+    val email: String,
+    val apartamento: Apartamento) {
 
 //    fun getNomeApartamento() = "${nome} - ${apartamento}"
 

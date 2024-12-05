@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +22,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,8 +38,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zeporteiro.zeporteiroapp.R
+import com.zeporteiro.zeporteiroapp.data.Entrega
 import com.zeporteiro.zeporteiroapp.ui.theme.ZePorteiroAppTheme
+import com.zeporteiro.zeporteiroapp.viewModel.ListaEncomendaViewModel
+import com.zeporteiro.zeporteiroapp.viewModel.SignUpViewModel
+import org.koin.java.KoinJavaComponent.inject
 
 class ListaEncomenda : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +64,17 @@ class ListaEncomenda : ComponentActivity() {
 
 @Composable
 fun ListaEncomendasScreen(modifier: Modifier = Modifier) {
+
+    val viewModel: ListaEncomendaViewModel by inject(ListaEncomendaViewModel::class.java)
+
+    val entregas = viewModel.entregas.collectAsState().value
+    val isLoading = viewModel.isLoading.collectAsState().value
+    val error = viewModel.error.collectAsState().value
+
+    LaunchedEffect(Unit) {
+        viewModel.carregarEntregas()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -63,8 +85,117 @@ fun ListaEncomendasScreen(modifier: Modifier = Modifier) {
     ) {
         Header3()
         Search()
-        ConfirmarEncomenda()
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFF294B29))
+            }
+        }
+
+        error?.let { errorMsg ->
+            Text(
+                text = errorMsg,
+                color = Color.Red,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+
+        LazyColumn {
+            items(entregas ?: emptyList()) { entrega ->
+                EntregaItem(
+                    entrega = entrega,
+                    onConfirmarClick = {
+                        entrega.id?.let { id -> viewModel.confirmarRecebimento(id) }
+                    }
+                )
+            }
+        }
+
         BottomNavigationBar()
+    }
+}
+
+@Composable
+fun EntregaItem(
+    entrega: Entrega,
+    onConfirmarClick: () -> Unit
+) {
+    val isPendente = !entrega.recebido
+
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 14.dp, vertical = 8.dp)
+            .clip(shape = RoundedCornerShape(12.dp))
+            .fillMaxWidth()
+            .background(
+                color = if (isPendente) Color(0xFF294B29) else Color.White,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(vertical = 23.dp, horizontal = 20.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Encomenda #${entrega.id ?: ""}",
+                    color = if (isPendente) Color.White else Color(0xFF0D1B34),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 6.dp)
+                )
+                entrega.porteiro?.let { porteiro ->
+                    Text(
+                        text = "Porteiro ${porteiro.nome ?: ""}",
+                        color = if (isPendente) Color(0xFFB4B7BF) else Color(0xFF8696BB),
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
+            if (isPendente) {
+                Text(
+                    text = "Confirmar Entrega",
+                    color = Color(0xFF294B29),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .background(Color.White, RoundedCornerShape(12.dp))
+                        .clickable { onConfirmarClick() }
+                        .padding(vertical = 9.dp, horizontal = 16.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Image(
+                painter = painterResource(
+                    id = if (isPendente) R.mipmap.icon_calender_white else R.mipmap.icon_calendar
+                ),
+                contentDescription = "Calendário",
+                modifier = Modifier
+                    .padding(end = 9.dp)
+                    .size(16.dp)
+            )
+            Text(
+                text = entrega.dataRecebimentoPorteiro ?: "",
+                color = if (isPendente) Color.White else Color(0xFF6B6E82),
+                fontSize = 12.sp,
+                modifier = Modifier.padding(end = 21.dp)
+            )
+        }
     }
 }
 

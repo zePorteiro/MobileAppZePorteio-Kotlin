@@ -1,6 +1,7 @@
 package com.zeporteiro.zeporteiroapp.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -62,7 +63,29 @@ class WelcomePage : ComponentActivity() {
                             )
                         }
                         composable("login") {
-                            LoginScreen()
+                            LoginScreen(
+                                navController = navController,
+                                onLoginSuccess = {
+                                    Log.d("Navigation", "Login bem sucedido, navegando para home")
+                                    navController.navigate("home") {
+                                        popUpTo("welcome") { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
+                        composable("signup") {
+                            SignUpScreen(
+                                navController = navController
+                            )
+                        }
+                        composable("signup2") {
+                            CadastroScreen(
+                                navController = navController
+                            )
+                        }
+                        composable("home") {
+                            Log.d("Navigation", "Renderizando tela Home")
+                            HomeScreen()
                         }
                     }
                 }

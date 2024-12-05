@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:usesCleartextTraffic="true"
         android:name=".Aplicacao"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -16,67 +15,59 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ZePorteiroApp"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".viewModel.ListaEncomendaViewModel"
+            android:exported="false"
+            android:label="@string/title_activity_lista_encomenda_view_model"
+            android:theme="@style/Theme.ZePorteiroApp" />
         <activity
             android:name=".activities.WelcomePage"
             android:exported="true"
             android:label="@string/title_activity_welcome_page"
-            android:theme="@style/Theme.ZePorteiroApp" />
+            android:theme="@style/Theme.ZePorteiroApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.SignUpPage"
             android:exported="true"
             android:label="@string/title_activity_sign_up_page"
             android:theme="@style/Theme.ZePorteiroApp" />
-
         <activity
             android:name=".activities.SignUp2Page"
             android:exported="true"
             android:label="@string/title_activity_sign_up2_page"
             android:theme="@style/Theme.ZePorteiroApp" />
-
         <activity
             android:name=".activities.ConfirmDeliveryPage"
             android:exported="true"
             android:label="@string/title_activity_confirm_delivery_page"
             android:theme="@style/Theme.ZePorteiroApp" />
-
         <activity
             android:name=".activities.HomePage"
             android:exported="true"
             android:label="@string/title_activity_home_page"
             android:theme="@style/Theme.ZePorteiroApp" />
-
         <activity
             android:name=".activities.ConfirmarEntrega"
             android:exported="true"
             android:label="@string/title_activity_home_page"
             android:theme="@style/Theme.ZePorteiroApp" />
-
         <activity
             android:name=".activities.ListaEncomenda"
             android:exported="true"
             android:label="@string/title_activity_home_page"
             android:theme="@style/Theme.ZePorteiroApp" />
-
         <activity
             android:name=".activities.Profile"
             android:exported="true"
             android:label="@string/title_activity_home_page"
             android:theme="@style/Theme.ZePorteiroApp" />
-
-        <activity
-            android:name=".activities.LoginPage"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.ZePorteiroApp">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
     </application>
 
 </manifest>

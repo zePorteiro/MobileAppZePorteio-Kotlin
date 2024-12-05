@@ -1,18 +1,27 @@
 package com.zeporteiro.zeporteiroapp.di
 
+import com.zeporteiro.zeporteiroapp.data.datastore.DataStoreManager
 import com.zeporteiro.zeporteiroapp.network.ApiZePorteiro
 import com.zeporteiro.zeporteiroapp.network.RetroFitService
 import com.zeporteiro.zeporteiroapp.repository.AuthRepository
+import com.zeporteiro.zeporteiroapp.viewModel.ListaEncomendaViewModel
 import com.zeporteiro.zeporteiroapp.viewModel.LoginPageViewModel
+import com.zeporteiro.zeporteiroapp.viewModel.SignUpViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val moduloUsuario = module {
+    single {
+        DataStoreManager(get())
+    }
+
     // Singleton para SessaoUsuario
-    single { SessaoUsuario() }
+    single {
+        SessaoUsuario(get())
+    }
 
     // Singleton para ApiZePorteiro
-    single {
+    single<ApiZePorteiro> {
         RetroFitService.getApi(get<SessaoUsuario>().token)
     }
 
@@ -20,38 +29,25 @@ val moduloUsuario = module {
     single {
         AuthRepository(
             apiZePorteiro = get(),
-            sessaoUsuario = get()
+            sessaoUsuario = get(),
+            dataStoreManager = get()
         )
     }
 
     // ViewModel
     viewModel {
         LoginPageViewModel(
-            authRepository = get()
+            authRepository = get(),
+            dataStoreManager = get(),
+            apiZe = get()
         )
     }
 
-    /*
-    single -> indica que o objeto será instanciado uma única vez
-              Ou seja, todos os lugares que pedirem um objeto do tipo SessaoUsuario
-              receberão a MESMA instância
-     */
-//    single<SessaoUsuario> {
-//        // estamos dizendo para o Koin como criar um objeto do tipo SessaoUsuario para o primeiro que pedir
-//        // da 2a vez em diante, usará a instância criada anteriormente
-//        SessaoUsuario()
-//    }
+    single {
+        SignUpViewModel(
+            api = get()
+        )
+    }
 
-//    single<ApiZePorteiro> {
-//        // estamos dizendo para o Koin como criar um objeto do tipo ApiFilmes para o primeiro que pedir
-//        // o get<SessaoUsuario>() é uma forma de pedir ao Koin para entregar um objeto do tipo SessaoUsuario
-//        RetroFitService.getApi(get<SessaoUsuario>().token)
-//    }
-
-//    single { AuthRepository(get(), get()) }
-//    single { LoginPageViewModel(get()) }
-
-
-//    single { AuthRepository(get(), get()) }
-
+    viewModel { ListaEncomendaViewModel(get(), get()) }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,13 +13,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,8 +36,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.zeporteiro.zeporteiroapp.R
 import com.zeporteiro.zeporteiroapp.ui.theme.ZePorteiroAppTheme
+import com.zeporteiro.zeporteiroapp.viewModel.LoginPageViewModel
+import com.zeporteiro.zeporteiroapp.viewModel.SignUpViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.java.KoinJavaComponent.inject
 
 class SignUpPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,23 +51,29 @@ class SignUpPage : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ZePorteiroAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SignUpScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                val navController = rememberNavController()
+                SignUpScreen(navController = navController)
             }
         }
     }
 }
 
 @Composable
-fun SignUpScreen(modifier: Modifier = Modifier) {
+fun SignUpScreen(
+//    viewModel: SignUpViewModel = koinViewModel(),
+    navController: NavController
+) {
+
+    val viewModel: SignUpViewModel by inject(SignUpViewModel::class.java)
+
     var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var confirmarSenha by remember { mutableStateOf("") }
+
+    val error by viewModel.error.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Column(
         modifier = Modifier
@@ -121,19 +137,44 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
             value = confirmarSenha,
             onValueChange = { confirmarSenha = it },
             label = "Confirmar Senha",
-            placeholder = "Digite a sua senha"
+            placeholder = "Digite sua senha novamente"
         )
+
+        error?.let {
+            Text(
+                text = it,
+                color = Color.Red,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { },
+            onClick = {
+                if (viewModel.setDadosPessoais(nome, email, telefone, senha, confirmarSenha)) {
+                    navController.navigate("signup2")
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF294B29))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF294B29)),
+            enabled = !isLoading
         ) {
-            Text("Avançar", color = Color.White)
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color.White
+                )
+            } else {
+                Text(
+                    "Avançar",
+                    color = Color.White,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
 
         Row(
@@ -151,7 +192,10 @@ fun SignUpScreen(modifier: Modifier = Modifier) {
                 "Acesse agora",
                 color = Color(0xFF3D3D3D),
                 fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.clickable {
+                    navController.popBackStack()
+                }
             )
         }
     }
@@ -213,11 +257,11 @@ fun InputSenha(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun SignUpScreenPreview3() {
+fun SignUpScreenPreview() {
     ZePorteiroAppTheme {
-        SignUpScreen()
+        val navController = rememberNavController()
+        SignUpScreen(navController = navController)
     }
 }

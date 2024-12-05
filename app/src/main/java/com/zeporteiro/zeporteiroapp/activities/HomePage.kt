@@ -1,5 +1,6 @@
 package com.zeporteiro.zeporteiroapp.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -128,6 +131,8 @@ fun NovasAtividades() {
 
 @Composable
 fun Atalhos() {
+    val context = LocalContext.current
+
     Text(
         text = "Acesso rápido",
         fontSize = 14.sp,
@@ -138,28 +143,35 @@ fun Atalhos() {
         icon = R.mipmap.icon_confirm,
         title = "Confirmar Entrega",
         description = "Confirme a retirada da sua encomenda"
-    )
+    ) {
+        context.startActivity(Intent(context, ListaEncomenda::class.java))
+    }
     AtalhosItem(
         icon = R.mipmap.icon_clipboard,
         title = "Minhas Encomendas",
         description = "Veja a lista de suas encomendas"
-    )
+    ) {
+        context.startActivity(Intent(context, ListaEncomenda::class.java))
+    }
     AtalhosItem(
         icon = R.mipmap.icon_person,
         title = "Meu Perfil",
         description = "Veja as informações do seu perfil"
-    )
+    ) {
+        context.startActivity(Intent(context, Profile::class.java))
+    }
 }
 
 @Composable
-fun AtalhosItem(icon: Int, title: String, description: String) {
+fun AtalhosItem(icon: Int, title: String, description: String,  onClick: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Color(248, 249, 254, 255))
-            .padding(16.dp),
+            .padding(16.dp)
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(

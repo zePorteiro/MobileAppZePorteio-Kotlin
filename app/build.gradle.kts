@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -79,4 +80,15 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.0")
     implementation("androidx.datastore:datastore-core:1.1.0")
     implementation("io.insert-koin:koin-androidx-compose:3.4.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
+    // Koin Core
+    implementation("io.insert-koin:koin-core:3.5.0")
+
+    // Koin Android
+    implementation("io.insert-koin:koin-android:3.5.0")
+
+    // Koin para Jetpack Compose
+    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
 }

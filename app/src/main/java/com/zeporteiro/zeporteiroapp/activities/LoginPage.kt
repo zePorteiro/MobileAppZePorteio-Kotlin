@@ -1,11 +1,13 @@
 package com.zeporteiro.zeporteiroapp.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -45,36 +48,49 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zeporteiro.zeporteiroapp.ui.theme.ZePorteiroAppTheme
 import com.zeporteiro.zeporteiroapp.viewModel.LoginPageViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.zeporteiro.zeporteiroapp.R
+import com.zeporteiro.zeporteiroapp.repository.AuthRepository
 import org.koin.androidx.compose.koinViewModel
-import kotlinx.coroutines.flow.collectAsState
+import org.koin.java.KoinJavaComponent.inject
 
-class LoginPage : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ZePorteiroAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
-    }
-}
 
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier) {
-    val viewModel: LoginPageViewModel = koinViewModel()
+fun LoginScreen(modifier: Modifier = Modifier, onLoginSuccess: () -> Unit = {},
+                navController: NavController
+) {
+
+    val viewModel: LoginPageViewModel by inject(LoginPageViewModel::class.java)
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val error by viewModel.loginError.collectAsStateWithLifecycle()
+
+    LaunchedEffect(isLoggedIn) {
+        Log.d("LoginScreen", "Estado isLoggedIn alterado para: $isLoggedIn")
+        if (isLoggedIn) {
+            Log.d("LoginScreen", "Iniciando navegação para home")
+            try {
+                navController.navigate("home") {
+                    popUpTo("welcome") { inclusive = true }
+                }
+                Log.d("LoginScreen", "Navegação concluída com sucesso")
+            } catch (e: Exception) {
+                Log.e("LoginScreen", "Erro na navegação", e)
+            }
+        }
+    }
 
     val fontProvider = GoogleFont.Provider(
         providerAuthority = "com.google.android.gms.fonts",
@@ -147,10 +163,14 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal
                 )
-                Text(text = " Cadastre-se",
+                Text(
+                    text = " Cadastre-se",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(98, 123, 78, 255)
+                    color = Color(98, 123, 78, 255),
+                    modifier = Modifier.clickable {
+                        navController.navigate("signup")
+                    }
                 )
             }
         }
@@ -165,12 +185,8 @@ fun LoginForm(loginViewModel: LoginPageViewModel) {
 
     val isLoggedIn by loginViewModel.isLoggedIn.collectAsState()
     val loginError by loginViewModel.loginError.collectAsState()
+    val isLoading by loginViewModel.isLoading.collectAsState()
 
-    LaunchedEffect(isLoggedIn) {
-        if (isLoggedIn) {
-            // Navegue para a próxima tela
-        }
-    }
     Column {
         OutlinedTextField(
             value = email,
@@ -180,7 +196,8 @@ fun LoginForm(loginViewModel: LoginPageViewModel) {
             },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -195,8 +212,12 @@ fun LoginForm(loginViewModel: LoginPageViewModel) {
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            enabled = !isLoading,
             trailingIcon = {
-                IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                IconButton(
+                    onClick = { isPasswordVisible = !isPasswordVisible },
+                    enabled = !isLoading
+                ) {
                     Icon(
                         painter = painterResource(
                             id = if (isPasswordVisible) R.mipmap.hide_password_icon
@@ -233,22 +254,30 @@ fun LoginForm(loginViewModel: LoginPageViewModel) {
                 .fillMaxWidth()
                 .height(48.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF294B29))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF294B29)),
+            enabled = !isLoading
         ) {
-            Text(
-                text = "Fazer Login",
-                color = Color.White,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold
-            )
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color.White
+                )
+            } else {
+                Text(
+                    text = "Fazer Login",
+                    color = Color.White,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun GreetingPreview() {
-    ZePorteiroAppTheme {
-        LoginScreen()
-    }
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun GreetingPreview() {
+//    ZePorteiroAppTheme {
+//        LoginScreen()
+//    }
+//}
