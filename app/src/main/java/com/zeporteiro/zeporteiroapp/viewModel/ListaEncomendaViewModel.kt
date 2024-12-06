@@ -1,6 +1,7 @@
 package com.zeporteiro.zeporteiroapp.viewModel
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.datastore.core.IOException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,7 @@ import com.zeporteiro.zeporteiroapp.network.ApiZePorteiro
 import com.zeporteiro.zeporteiroapp.network.RetroFitService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -19,8 +21,7 @@ class ListaEncomendaViewModel(
     private val apiZePorteiro: ApiZePorteiro,
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
-    private val _entregas = MutableStateFlow<List<Entrega>>(emptyList())
-    val entregas = _entregas.asStateFlow()
+    val _entregas = mutableStateListOf<Entrega>()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
@@ -28,7 +29,7 @@ class ListaEncomendaViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
-     fun carregarEntregas() {
+    fun carregarEntregas() {
         if (_isLoading.value) return
 
         viewModelScope.launch {
@@ -37,17 +38,17 @@ class ListaEncomendaViewModel(
                 val token = dataStoreManager.token.first()
                 val userId = dataStoreManager.userId.first()
 
+                Log.d("ListaEncomendaViewModel", "Token: $token, UserId: $userId")
+
                 if (token.isNullOrEmpty()) {
                     _error.value = "Usuário não autenticado"
                     return@launch
                 }
 
-                Log.d("ListaEncomendaViewModel", "Iniciando requisição - UserId: $userId")
-
                 val api = RetroFitService.getApi(token)
                 val moradorResponse = api.getMoradorById(userId)
 
-                Log.d("ListaEncomendaViewModel", "Resposta do morador - Code: ${moradorResponse.code()}")
+                Log.d("ListaEncomendaViewModel", "Resposta morador: ${moradorResponse.body()}")
 
                 when (moradorResponse.code()) {
                     200 -> {
@@ -58,10 +59,13 @@ class ListaEncomendaViewModel(
                             Log.d("ListaEncomendaViewModel", "Buscando entregas para apartamento: $numeroApartamento")
                             val entregasResponse = api.getEntregasPorApartamento(numeroApartamento)
 
+                            Log.d("ListaEncomendaViewModel", "Resposta entregas: ${entregasResponse.body()}")
+
                             if (entregasResponse.isSuccessful) {
-                                _entregas.value = entregasResponse.body() ?: emptyList()
+                                _entregas.clear()
+                                _entregas.addAll( entregasResponse.body() ?: emptyList())
                                 _error.value = null
-                                Log.d("ListaEncomendaViewModel", "Entregas carregadas: ${_entregas.value.size}")
+                                Log.d("ListaEncomendaViewModel", "Estado atualizado: ${_entregas}")
                             } else {
                                 _error.value = "Erro ao carregar entregas: ${entregasResponse.message()}"
                                 Log.e("ListaEncomendaViewModel", "Erro na API de entregas: ${entregasResponse.code()}")
@@ -72,7 +76,6 @@ class ListaEncomendaViewModel(
                     }
                     401 -> {
                         _error.value = "Sessão expirada. Por favor, faça login novamente"
-                        // Opcional: Redirecionar para login
                     }
                     else -> {
                         _error.value = "Erro ao buscar informações do morador (${moradorResponse.code()})"

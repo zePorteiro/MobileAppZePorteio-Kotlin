@@ -47,6 +47,9 @@ import com.zeporteiro.zeporteiroapp.viewModel.SignUpViewModel
 import org.koin.java.KoinJavaComponent.inject
 
 class ListaEncomenda : ComponentActivity() {
+
+    val viewModel: ListaEncomendaViewModel by inject(ListaEncomendaViewModel::class.java)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -54,7 +57,8 @@ class ListaEncomenda : ComponentActivity() {
             ZePorteiroAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ListaEncomendasScreen(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        viewModel = viewModel
                     )
                 }
             }
@@ -63,11 +67,11 @@ class ListaEncomenda : ComponentActivity() {
 }
 
 @Composable
-fun ListaEncomendasScreen(modifier: Modifier = Modifier) {
+fun ListaEncomendasScreen(modifier: Modifier = Modifier, viewModel: ListaEncomendaViewModel) {
 
-    val viewModel: ListaEncomendaViewModel by inject(ListaEncomendaViewModel::class.java)
 
-    val entregas = viewModel.entregas.collectAsState().value
+
+    val entregas = viewModel._entregas
     val isLoading = viewModel.isLoading.collectAsState().value
     val error = viewModel.error.collectAsState().value
 
@@ -106,7 +110,7 @@ fun ListaEncomendasScreen(modifier: Modifier = Modifier) {
         }
 
         LazyColumn {
-            items(entregas ?: emptyList()) { entrega ->
+            items(viewModel._entregas) { entrega ->
                 EntregaItem(
                     entrega = entrega,
                     onConfirmarClick = {
@@ -622,11 +626,5 @@ fun NavigationItem2(iconId: Int, label: String) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ListaEncomendaPreview() {
-    ZePorteiroAppTheme {
-        ListaEncomendasScreen()
-    }
-}
+
 
