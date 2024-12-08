@@ -24,16 +24,16 @@ interface ApiZePorteiro {
         @Query("numero") numeroApartamento: String
     ): Response<Unit>
 
-    @POST("/moradores/login")
+    @POST("moradores/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
-    @GET("/moradores")
+    @GET("moradores")
     suspend fun getMoradores(): Response<List<Morador>>
 
-    @PUT("/moradores/{id}")
+    @PUT("moradores/{id}")
     suspend fun putMorador(@Path("id") id: Int, @Body morador: Morador): Response<Morador>
 
-    @DELETE("/moradores/{id}")
+    @DELETE("moradores/{id}")
     suspend fun deleteMorador(@Path("id") id: Int): Response<Unit>
 
     @GET("moradores/{id}")

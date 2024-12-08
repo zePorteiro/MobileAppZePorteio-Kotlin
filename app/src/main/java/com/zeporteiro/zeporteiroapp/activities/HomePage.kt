@@ -1,10 +1,5 @@
 package com.zeporteiro.zeporteiroapp.activities
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,51 +16,34 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.zeporteiro.zeporteiroapp.R
-import com.zeporteiro.zeporteiroapp.ui.theme.ZePorteiroAppTheme
-
-class HomePage : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ZePorteiroAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
-    }
-}
+import com.zeporteiro.zeporteiroapp.utils.NavigationRoutes
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
-
+fun HomeScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
             .padding(16.dp)
     ) {
         Header()
         NovasAtividades()
-        Atalhos()
-        Spacer(modifier = Modifier.weight(1f))
-        BarraDeNavegacao()
+        Atalhos(navController)
     }
 }
 
@@ -89,16 +67,14 @@ fun Header() {
         Box(
             modifier = Modifier
                 .size(40.dp)
-                .background(Color.White, shape = RoundedCornerShape(50.dp))
-                .padding(6.dp)
-                .border(2.dp, Color.White, RoundedCornerShape(20.dp)),
         ) {
-            Image(
-                painter = painterResource(id = R.mipmap.icon_settings),
+            Icon(
+                imageVector = Icons.Default.Settings,
                 contentDescription = "Configurações",
+                tint = Color(0xFF294B29),
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(8.dp))
+                    .size(28.dp)
+                    .align(Alignment.Center)
             )
         }
     }
@@ -130,9 +106,7 @@ fun NovasAtividades() {
 }
 
 @Composable
-fun Atalhos() {
-    val context = LocalContext.current
-
+fun Atalhos(navController: NavController) {
     Text(
         text = "Acesso rápido",
         fontSize = 14.sp,
@@ -144,32 +118,37 @@ fun Atalhos() {
         title = "Confirmar Entrega",
         description = "Confirme a retirada da sua encomenda"
     ) {
-        context.startActivity(Intent(context, ListaEncomenda::class.java))
+        navController.navigate(NavigationRoutes.LISTA_ENCOMENDAS)
     }
     AtalhosItem(
         icon = R.mipmap.icon_clipboard,
         title = "Minhas Encomendas",
         description = "Veja a lista de suas encomendas"
     ) {
-        context.startActivity(Intent(context, ListaEncomenda::class.java))
+        navController.navigate(NavigationRoutes.LISTA_ENCOMENDAS)
     }
     AtalhosItem(
         icon = R.mipmap.icon_person,
         title = "Meu Perfil",
         description = "Veja as informações do seu perfil"
     ) {
-        context.startActivity(Intent(context, Profile::class.java))
+        navController.navigate(NavigationRoutes.PROFILE)
     }
 }
 
 @Composable
-fun AtalhosItem(icon: Int, title: String, description: String,  onClick: () -> Unit = {}) {
+fun AtalhosItem(
+    icon: Int,
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(Color(248, 249, 254, 255))
+            .background(Color.White)
             .padding(16.dp)
             .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
@@ -204,54 +183,54 @@ fun AtalhosItem(icon: Int, title: String, description: String,  onClick: () -> U
     }
 }
 
-@Composable
-fun BarraDeNavegacao() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        NavegacaoItem(
-            icon = R.mipmap.icon_inicial_screen,
-            label = "Página Inicial"
-        )
-        NavegacaoItem(
-            icon = R.mipmap.icon_package,
-            label = "Encomendas"
-        )
-        NavegacaoItem(
-            icon = R.mipmap.icon_profile,
-            label = "Perfil"
-        )
-    }
-}
+//@Composable
+//fun BarraDeNavegacao() {
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .background(Color.White)
+//            .padding(16.dp),
+//        horizontalArrangement = Arrangement.SpaceBetween
+//    ) {
+//        NavegacaoItem(
+//            icon = R.mipmap.icon_inicial_screen,
+//            label = "Página Inicial"
+//        )
+//        NavegacaoItem(
+//            icon = R.mipmap.icon_package,
+//            label = "Encomendas"
+//        )
+//        NavegacaoItem(
+//            icon = R.mipmap.icon_profile,
+//            label = "Perfil"
+//        )
+//    }
+//}
+//
+//@Composable
+//fun NavegacaoItem(icon: Int, label: String) {
+//    Column(
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        Image(
+//            painter = painterResource(id = icon),
+//            contentDescription = null,
+//            modifier = Modifier.size(20.dp)
+//        )
+//        Spacer(modifier = Modifier.height(8.dp))
+//        Text(
+//            text = label,
+//            fontSize = 10.sp,
+//            color = Color(0xFF71727A)
+//        )
+//    }
+//}
 
-@Composable
-fun NavegacaoItem(icon: Int, label: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = icon),
-            contentDescription = null,
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = label,
-            fontSize = 10.sp,
-            color = Color(0xFF71727A)
-        )
-    }
-}
 
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview2() {
-    ZePorteiroAppTheme {
-        HomeScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview2() {
+//    ZePorteiroAppTheme {
+//        HomeScreen()
+//    }
+//}

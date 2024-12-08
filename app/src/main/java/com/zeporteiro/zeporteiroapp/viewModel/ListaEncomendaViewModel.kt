@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class ListaEncomendaViewModel(
     private val apiZePorteiro: ApiZePorteiro,
@@ -28,6 +29,8 @@ class ListaEncomendaViewModel(
 
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
+
+//    private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
 
     fun carregarEntregas() {
         if (_isLoading.value) return

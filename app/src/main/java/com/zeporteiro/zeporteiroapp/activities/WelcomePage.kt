@@ -1,7 +1,6 @@
 package com.zeporteiro.zeporteiroapp.activities
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,15 +34,19 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.zeporteiro.zeporteiroapp.R
+import com.zeporteiro.zeporteiroapp.components.BottomNavigationBar
 import com.zeporteiro.zeporteiroapp.ui.theme.ZePorteiroAppTheme
+import com.zeporteiro.zeporteiroapp.utils.NavigationRoutes
+import com.zeporteiro.zeporteiroapp.viewModel.ListaEncomendaViewModel
+import org.koin.android.ext.android.inject
 
 class WelcomePage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,41 +55,71 @@ class WelcomePage : ComponentActivity() {
         setContent {
             ZePorteiroAppTheme {
                 val navController = rememberNavController()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NavHost(
-                        navController = navController,
-                        startDestination = "welcome"
-                    ) {
-                        composable("welcome") {
-                            WelcomeScreen(
-                                modifier = Modifier.padding(innerPadding),
-                                navController = navController
-                            )
-                        }
-                        composable("login") {
-                            LoginScreen(
-                                navController = navController,
-                                onLoginSuccess = {
-                                    Log.d("Navigation", "Login bem sucedido, navegando para home")
-                                    navController.navigate("home") {
-                                        popUpTo("welcome") { inclusive = true }
-                                    }
+                val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color(0xFFF5F5F5)
+                ) {
+                    Scaffold(
+                        bottomBar = {
+                            // Mostra a barra apenas nas telas principais
+                            when (currentRoute) {
+                                NavigationRoutes.HOME,
+                                NavigationRoutes.LISTA_ENCOMENDAS,
+                                NavigationRoutes.PROFILE -> {
+                                    BottomNavigationBar(
+                                        navController = navController,
+                                        currentRoute = currentRoute
+                                    )
                                 }
-                            )
+                            }
                         }
-                        composable("signup") {
-                            SignUpScreen(
-                                navController = navController
-                            )
-                        }
-                        composable("signup2") {
-                            CadastroScreen(
-                                navController = navController
-                            )
-                        }
-                        composable("home") {
-                            Log.d("Navigation", "Renderizando tela Home")
-                            HomeScreen()
+                    ) { innerPadding ->
+                        NavHost(
+                            navController = navController,
+                            startDestination = NavigationRoutes.WELCOME,
+                            modifier = if (currentRoute in listOf(NavigationRoutes.HOME, NavigationRoutes.LISTA_ENCOMENDAS, NavigationRoutes.PROFILE)) {
+                                Modifier.padding(innerPadding)
+                            } else {
+                                Modifier
+                            }
+                        ) {
+                            // Rotas de autenticação
+                            composable(NavigationRoutes.WELCOME) {
+                                WelcomeScreen(navController = navController)
+                            }
+                            composable(NavigationRoutes.LOGIN) {
+                                LoginScreen(
+                                    navController = navController,
+                                    onLoginSuccess = {
+                                        navController.navigate(NavigationRoutes.HOME) {
+                                            popUpTo(NavigationRoutes.WELCOME) { inclusive = true }
+                                        }
+                                    }
+                                )
+                            }
+                            composable(NavigationRoutes.SIGNUP) {
+                                SignUpScreen(navController = navController)
+                            }
+                            composable(NavigationRoutes.SIGNUP2) {
+                                CadastroScreen(navController = navController)
+                            }
+
+                            // Rotas principais (com barra de navegação)
+                            composable(NavigationRoutes.HOME) {
+                                HomeScreen(navController = navController)
+                            }
+                            composable(NavigationRoutes.LISTA_ENCOMENDAS) {
+                                val viewModel: ListaEncomendaViewModel by inject()
+                                ListaEncomendasScreen(
+                                    viewModel = viewModel,
+                                    navController = navController
+                                )
+                            }
+                            composable(NavigationRoutes.PROFILE) {
+                                ProfileScreen(navController = navController)
+                            }
                         }
                     }
                 }
