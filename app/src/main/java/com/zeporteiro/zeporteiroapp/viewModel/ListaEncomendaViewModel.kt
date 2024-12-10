@@ -1,7 +1,9 @@
 package com.zeporteiro.zeporteiroapp.viewModel
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.IOException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,9 +11,11 @@ import com.zeporteiro.zeporteiroapp.data.Entrega
 import com.zeporteiro.zeporteiroapp.data.datastore.DataStoreManager
 import com.zeporteiro.zeporteiroapp.network.ApiZePorteiro
 import com.zeporteiro.zeporteiroapp.network.RetroFitService
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -22,7 +26,15 @@ class ListaEncomendaViewModel(
     private val apiZePorteiro: ApiZePorteiro,
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
-    val _entregas = mutableStateListOf<Entrega>()
+//    val _entregas = mutableStateListOf<Entrega>()
+//    private val _entregas = mutableStateOf(listOf<Entrega>())
+//    val entregas : MutableState<List<Entrega>> = _entregas
+
+    private val _entregas = MutableStateFlow<List<Entrega>>(emptyList())
+    val entregas = _entregas.asStateFlow()
+
+//    private val _entregas = MutableSharedFlow<List<Entrega>>(replay = 1)
+//    val entregas = _entregas.asSharedFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
@@ -30,7 +42,20 @@ class ListaEncomendaViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
-//    private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+    init {
+        carregarEntregas()
+    }
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+
+    private fun ordenarEntregas(entregas: List<Entrega>): List<Entrega> {
+        return entregas.sortedWith(
+            compareBy<Entrega> { it.recebido }
+                .thenByDescending { entrega ->
+                    entrega.dataRecebimentoPorteiro
+                }
+        )
+    }
 
     fun carregarEntregas() {
         if (_isLoading.value) return
@@ -65,8 +90,13 @@ class ListaEncomendaViewModel(
                             Log.d("ListaEncomendaViewModel", "Resposta entregas: ${entregasResponse.body()}")
 
                             if (entregasResponse.isSuccessful) {
-                                _entregas.clear()
-                                _entregas.addAll( entregasResponse.body() ?: emptyList())
+//                                _entregas.clear()
+//                                _entregas.value = entregasResponse.body() ?: emptyList()
+//                                val listaEntregas = entregasResponse.body() ?: emptyList()
+//                                Log.d("ListaEncomendaViewModel", "Entregas carregadas: ${listaEntregas.size}")
+//                                _entregas.value = ordenarEntregas(listaEntregas)
+                                val listaEntregas = entregasResponse.body() ?: emptyList()
+                                _entregas.value = ordenarEntregas(listaEntregas)
                                 _error.value = null
                                 Log.d("ListaEncomendaViewModel", "Estado atualizado: ${_entregas}")
                             } else {
@@ -99,18 +129,28 @@ class ListaEncomendaViewModel(
     fun confirmarRecebimento(entregaId: Int) {
         viewModelScope.launch {
             try {
+                _isLoading.value = true
                 val token = dataStoreManager.token.first()
                 if (!token.isNullOrEmpty()) {
                     val api = RetroFitService.getApi(token)
                     val response = api.registrarEntregaRecebida(entregaId)
                     if (response.isSuccessful) {
-                        carregarEntregas()
+//                        carregarEntregas()
+                        response.body()?.let { entregaAtualizada ->
+                            val novaLista = _entregas.value.map { entrega ->
+                                if (entrega.id == entregaId) entregaAtualizada else entrega
+                            }
+                            _entregas.value = ordenarEntregas(novaLista)
+                            Log.d("ListaEncomendaViewModel", "Entrega atualizada com sucesso")
+                        }
                     } else {
                         _error.value = "Erro ao confirmar recebimento"
                     }
                 }
             } catch (e: Exception) {
                 _error.value = "Erro ao confirmar recebimento: ${e.message}"
+            }finally {
+                _isLoading.value = false
             }
         }
     }

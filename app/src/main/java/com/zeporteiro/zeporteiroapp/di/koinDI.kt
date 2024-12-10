@@ -4,6 +4,7 @@ import com.zeporteiro.zeporteiroapp.data.datastore.DataStoreManager
 import com.zeporteiro.zeporteiroapp.network.ApiZePorteiro
 import com.zeporteiro.zeporteiroapp.network.RetroFitService
 import com.zeporteiro.zeporteiroapp.repository.AuthRepository
+import com.zeporteiro.zeporteiroapp.viewModel.HomePageViewModel
 import com.zeporteiro.zeporteiroapp.viewModel.ListaEncomendaViewModel
 import com.zeporteiro.zeporteiroapp.viewModel.LoginPageViewModel
 import com.zeporteiro.zeporteiroapp.viewModel.SignUpViewModel
@@ -50,4 +51,11 @@ val moduloUsuario = module {
     }
 
     viewModel { ListaEncomendaViewModel(get(), get()) }
+
+    viewModel {
+        HomePageViewModel(
+            dataStoreManager = get(),
+            apiZe = get()
+        )
+    }
 }

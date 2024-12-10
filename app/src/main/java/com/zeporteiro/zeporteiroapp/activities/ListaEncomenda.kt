@@ -40,8 +40,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -92,16 +96,31 @@ fun ListaEncomendasScreen(
     viewModel: ListaEncomendaViewModel,
     navController: NavController
 ) {
-    val entregas = viewModel._entregas
+//    val entregas = viewModel.entregas.value
+//    val entregas by remember { viewModel.entregas }
+//    val entregas by remember(viewModel) {
+//        snapshotFlow { viewModel.entregas.value }
+//    }.collectAsState(initial = emptyList())
+
+//    var entregas by remember { mutableStateOf<List<Entrega>>(emptyList()) }
+
+    val entregas by viewModel.entregas.collectAsStateWithLifecycle()
+
     val isLoading = viewModel.isLoading.collectAsState().value
     val error = viewModel.error.collectAsState().value
 
-    LaunchedEffect(Unit) {
-        viewModel.carregarEntregas()
-    }
+//    LaunchedEffect(viewModel) {
+//        viewModel.entregas.collect { novaLista ->
+//            entregas = novaLista
+//        }
+//    }
+
+//    LaunchedEffect(Unit) {
+//        viewModel.carregarEntregas()
+//    }
 
     // Log para debug
-    LaunchedEffect(entregas) {
+    LaunchedEffect(entregas.size) {
         println("Debug - Quantidade de entregas: ${entregas.size}")
     }
 
@@ -159,7 +178,7 @@ fun ListaEncomendasScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(
-                            items = entregas.sortedByDescending { it.dataRecebimentoPorteiro },
+                            items = entregas,
                             key = { it.id ?: 0 }
                         ) { entrega ->
                             EntregaItem(

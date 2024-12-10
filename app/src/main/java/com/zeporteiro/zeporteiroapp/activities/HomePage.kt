@@ -18,9 +18,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,24 +35,49 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.zeporteiro.zeporteiroapp.R
 import com.zeporteiro.zeporteiroapp.utils.NavigationRoutes
+import com.zeporteiro.zeporteiroapp.viewModel.HomePageViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.java.KoinJavaComponent.inject
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController
+) {
+    val viewModel: HomePageViewModel by inject(HomePageViewModel::class.java)
+    val estado by viewModel.estado.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
             .padding(16.dp)
     ) {
-        Header()
-        NovasAtividades()
+        Header(nomeMorador = estado.nomeMorador)
+        NovasAtividades(entregasPendentes = estado.entregasPendentes)
         Atalhos(navController)
+
+        if (estado.carregando) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(16.dp),
+                color = Color(0xFF294B29)
+            )
+        }
+
+        estado.erro?.let { erro ->
+            Text(
+                text = erro,
+                color = Color.Red,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
     }
 }
 
 
 @Composable
-fun Header() {
+fun Header(nomeMorador: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,7 +86,7 @@ fun Header() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Olá, Usuário!",
+            text = "Olá, ${nomeMorador.split(" ")[0]}!",
             fontSize = 35.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF294B29)
@@ -81,7 +109,7 @@ fun Header() {
 }
 
 @Composable
-fun NovasAtividades() {
+fun NovasAtividades(entregasPendentes: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -97,11 +125,27 @@ fun NovasAtividades() {
             color = Color(0xFF1F2024)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Confirmar nova encomenda",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.ExtraBold
-        )
+        when {
+            entregasPendentes > 0 -> {
+                Text(
+                    text = if (entregasPendentes == 1)
+                        "Você tem 1 entrega pendente para confirmação"
+                    else
+                        "Você tem $entregasPendentes entregas pendentes para confirmação",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFF294B29)
+                )
+            }
+            else -> {
+                Text(
+                    text = "Você não tem entregas pendentes para confirmação",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color(0xFF294B29)
+                )
+            }
+        }
     }
 }
 
