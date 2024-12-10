@@ -14,9 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.zeporteiro.zeporteiroapp.ui.theme.ZePorteiroAppTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,12 +50,9 @@ class SignUp2Page : ComponentActivity() {
 }
 
 @Composable
-fun CadastroScreen(
-//    viewModel: SignUpViewModel = koinViewModel(),
-    navController: NavController
-) {
-
+fun CadastroScreen(navController: NavController) {
     val viewModel: SignUpViewModel by inject(SignUpViewModel::class.java)
+    val scrollState = rememberScrollState()
 
     var cep by remember { mutableStateOf("") }
     var logradouro by remember { mutableStateOf("") }
@@ -73,88 +73,119 @@ fun CadastroScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-    ) {
-        Text(
-            text = "Faça o seu cadastro",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF294B29)
-        )
-        Text(
-            text = "Crie uma conta para começar a controlar suas encomendas",
-            fontSize = 15.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        CadastroForm(
-            cep = cep,
-            onCepChange = { cep = it },
-            logradouro = logradouro,
-            onLogradouroChange = { logradouro = it },
-            numero = numero,
-            onNumeroChange = { numero = it },
-            numeroApartamento = complemento,
-            onNumeroApartamentoChange = { complemento = it },
-            bloco = bloco,
-            onBlocoChange = { bloco = it },
-            nomeCondominio = nomeCondominio,
-            onNomeCondominioChange = { nomeCondominio = it }
-        )
-
-        error?.let {
-            Text(
-                text = it,
-                color = Color.Red,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = {
-                viewModel.setDadosEndereco(
-                    cep = cep,
-                    logradouro = logradouro,
-                    numero = numero,
-                    numeroApartamento = complemento,
-                    bloco = bloco,
-                    nomeCondominio = nomeCondominio
-                )
-                viewModel.cadastrar()
-            },
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            enabled = !isLoading,
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF294B29))
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(scrollState)
+                .padding(24.dp)
+                .systemBarsPadding(),
         ) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = Color.White
-                )
-            } else {
-                Text("Finalizar Cadastro")
-            }
-        }
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Voltar",
-            fontSize = 12.sp,
-            color = Color(0xFF71727A),
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth()
-                .clickable { navController.popBackStack() }
-        )
+            Text(
+                text = "Faça o seu cadastro",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF294B29)
+            )
+
+            Text(
+                text = "Crie uma conta para começar a controlar suas encomendas",
+                fontSize = 15.sp,
+                color = Color(0xFF71727A),
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            CadastroForm(
+                cep = cep,
+                onCepChange = { newValue ->
+                    // Implementa a máscara do CEP XXXXX-XXX
+                    val digitsOnly = newValue.filter { it.isDigit() }
+                    val masked = when {
+                        digitsOnly.length <= 5 -> digitsOnly
+                        digitsOnly.length <= 8 -> "${digitsOnly.substring(0,5)}-${digitsOnly.substring(5)}"
+                        else -> "${digitsOnly.substring(0,5)}-${digitsOnly.substring(5,8)}"
+                    }
+                    if (masked.length <= 9) cep = masked
+                },
+                logradouro = logradouro,
+                onLogradouroChange = { logradouro = it },
+                numero = numero,
+                onNumeroChange = { if (it.all { char -> char.isDigit() }) numero = it },
+                numeroApartamento = complemento,
+                onNumeroApartamentoChange = { complemento = it },
+                bloco = bloco,
+                onBlocoChange = { bloco = it },
+                nomeCondominio = nomeCondominio,
+                onNomeCondominioChange = { nomeCondominio = it }
+            )
+
+            error?.let {
+                Text(
+                    text = it,
+                    color = Color.Red,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    viewModel.setDadosEndereco(
+                        cep = cep,
+                        logradouro = logradouro,
+                        numero = numero,
+                        numeroApartamento = complemento,
+                        bloco = bloco,
+                        nomeCondominio = nomeCondominio
+                    )
+                    viewModel.cadastrar()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                enabled = !isLoading,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF294B29))
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White
+                    )
+                } else {
+                    Text(
+                        text = "Finalizar Cadastro",
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Voltar",
+                    fontSize = 14.sp,
+                    color = Color(0xFF71727A),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.clickable { navController.popBackStack() }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 
@@ -178,7 +209,7 @@ fun CadastroForm(
             value = cep,
             onValueChange = onCepChange,
             label = "CEP*",
-            placeholder = "Digite o seu cep",
+            placeholder = "Digite o seu CEP",
             keyboardType = KeyboardType.Number
         )
         CadastroTextField(
@@ -223,26 +254,226 @@ fun CadastroTextField(
     placeholder: String,
     keyboardType: KeyboardType = KeyboardType.Text
 ) {
-    Column {
+    Column(modifier = Modifier.padding(vertical = 6.dp)) {
         Text(
             text = label,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = Color(0xFF3D3D3D)
         )
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             placeholder = { Text(placeholder) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                focusedBorderColor = MaterialTheme.colorScheme.primary
+                unfocusedBorderColor = Color(0xFFE2E2E2),
+                focusedBorderColor = Color(0xFF294B29)
             )
         )
     }
 }
+
+//@Composable
+//fun CadastroScreen(
+////    viewModel: SignUpViewModel = koinViewModel(),
+//    navController: NavController
+//) {
+//
+//    val viewModel: SignUpViewModel by inject(SignUpViewModel::class.java)
+//
+//    var cep by remember { mutableStateOf("") }
+//    var logradouro by remember { mutableStateOf("") }
+//    var numero by remember { mutableStateOf("") }
+//    var complemento by remember { mutableStateOf("") }
+//    var bloco by remember { mutableStateOf("") }
+//    var nomeCondominio by remember { mutableStateOf("") }
+//
+//    val isLoading by viewModel.isLoading.collectAsState()
+//    val error by viewModel.error.collectAsState()
+//    val cadastroSuccess by viewModel.cadastroSuccess.collectAsState()
+//
+//    LaunchedEffect(cadastroSuccess) {
+//        if (cadastroSuccess) {
+//            navController.navigate("login") {
+//                popUpTo("welcome") { inclusive = true }
+//            }
+//        }
+//    }
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(24.dp)
+//    ) {
+//        Text(
+//            text = "Faça o seu cadastro",
+//            fontSize = 28.sp,
+//            fontWeight = FontWeight.ExtraBold,
+//            color = Color(0xFF294B29)
+//        )
+//        Text(
+//            text = "Crie uma conta para começar a controlar suas encomendas",
+//            fontSize = 15.sp,
+//            color = MaterialTheme.colorScheme.onSurfaceVariant,
+//            modifier = Modifier.padding(top = 8.dp)
+//        )
+//
+//        Spacer(modifier = Modifier.height(24.dp))
+//
+//        CadastroForm(
+//            cep = cep,
+//            onCepChange = { cep = it },
+//            logradouro = logradouro,
+//            onLogradouroChange = { logradouro = it },
+//            numero = numero,
+//            onNumeroChange = { numero = it },
+//            numeroApartamento = complemento,
+//            onNumeroApartamentoChange = { complemento = it },
+//            bloco = bloco,
+//            onBlocoChange = { bloco = it },
+//            nomeCondominio = nomeCondominio,
+//            onNomeCondominioChange = { nomeCondominio = it }
+//        )
+//
+//        error?.let {
+//            Text(
+//                text = it,
+//                color = Color.Red,
+//                modifier = Modifier.padding(vertical = 8.dp)
+//            )
+//        }
+//
+//        Spacer(modifier = Modifier.height(24.dp))
+//
+//        Button(
+//            onClick = {
+//                viewModel.setDadosEndereco(
+//                    cep = cep,
+//                    logradouro = logradouro,
+//                    numero = numero,
+//                    numeroApartamento = complemento,
+//                    bloco = bloco,
+//                    nomeCondominio = nomeCondominio
+//                )
+//                viewModel.cadastrar()
+//            },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(48.dp),
+//            enabled = !isLoading,
+//            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF294B29))
+//        ) {
+//            if (isLoading) {
+//                CircularProgressIndicator(
+//                    modifier = Modifier.size(24.dp),
+//                    color = Color.White
+//                )
+//            } else {
+//                Text("Finalizar Cadastro")
+//            }
+//        }
+//
+//        Text(
+//            text = "Voltar",
+//            fontSize = 12.sp,
+//            color = Color(0xFF71727A),
+//            modifier = Modifier
+//                .padding(top = 16.dp)
+//                .fillMaxWidth()
+//                .clickable { navController.popBackStack() }
+//        )
+//    }
+//}
+//
+//@Composable
+//fun CadastroForm(
+//    cep: String,
+//    onCepChange: (String) -> Unit,
+//    logradouro: String,
+//    onLogradouroChange: (String) -> Unit,
+//    numero: String,
+//    onNumeroChange: (String) -> Unit,
+//    numeroApartamento: String,
+//    onNumeroApartamentoChange: (String) -> Unit,
+//    bloco: String,
+//    onBlocoChange: (String) -> Unit,
+//    nomeCondominio: String,
+//    onNomeCondominioChange: (String) -> Unit
+//) {
+//    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+//        CadastroTextField(
+//            value = cep,
+//            onValueChange = onCepChange,
+//            label = "CEP*",
+//            placeholder = "Digite o seu cep",
+//            keyboardType = KeyboardType.Number
+//        )
+//        CadastroTextField(
+//            value = logradouro,
+//            onValueChange = onLogradouroChange,
+//            label = "Logradouro*",
+//            placeholder = "Digite o logradouro"
+//        )
+//        CadastroTextField(
+//            value = numero,
+//            onValueChange = onNumeroChange,
+//            label = "Número*",
+//            placeholder = "Digite o número",
+//            keyboardType = KeyboardType.Number
+//        )
+//        CadastroTextField(
+//            value = numeroApartamento,
+//            onValueChange = onNumeroApartamentoChange,
+//            label = "Complemento*",
+//            placeholder = "Digite o número do apartamento"
+//        )
+//        CadastroTextField(
+//            value = bloco,
+//            onValueChange = onBlocoChange,
+//            label = "Bloco",
+//            placeholder = "Digite o bloco em que reside"
+//        )
+//        CadastroTextField(
+//            value = nomeCondominio,
+//            onValueChange = onNomeCondominioChange,
+//            label = "Nome do Condomínio*",
+//            placeholder = "Digite o nome do condomínio"
+//        )
+//    }
+//}
+//
+//@Composable
+//fun CadastroTextField(
+//    value: String,
+//    onValueChange: (String) -> Unit,
+//    label: String,
+//    placeholder: String,
+//    keyboardType: KeyboardType = KeyboardType.Text
+//) {
+//    Column {
+//        Text(
+//            text = label,
+//            fontSize = 12.sp,
+//            fontWeight = FontWeight.SemiBold,
+//            color = MaterialTheme.colorScheme.onSurface
+//        )
+//        OutlinedTextField(
+//            value = value,
+//            onValueChange = onValueChange,
+//            placeholder = { Text(placeholder) },
+//            modifier = Modifier.fillMaxWidth(),
+//            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+//            colors = OutlinedTextFieldDefaults.colors(
+//                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+//                focusedBorderColor = MaterialTheme.colorScheme.primary
+//            )
+//        )
+//    }
+//}
 
 //@Preview(showBackground = true)
 //@Composable
